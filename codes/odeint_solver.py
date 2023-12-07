@@ -4,23 +4,7 @@ import matplotlib.pyplot as plt
 from parameters import *
 from scipy import signal
 import scipy.integrate as integrate
-
-# Generate the desired potential shape
-
-def triangular_potential(time, write=False):
-
-    if write:
-
-        t = np.linspace(initial_time,final_time,time_steps)
-        
-        triangle_waveform = signal.sawtooth(2*np.pi*frequency*t-np.pi/2, 0.5)
-
-        voltage_file = open(f"{DATA_PATH}voltage_file.txt", "w")
-        for time_index in range(len(t)):
-            voltage_file.write(f'{t[time_index]} \t {triangle_waveform[time_index]} \n')
-
-
-    return signal.sawtooth(2*np.pi*frequency*time-np.pi/2, 0.5)
+import potential_shapes
 
 # Integrand in the definition of average concentration
 
@@ -46,10 +30,7 @@ def integrand(x, potential):
 
 def g_infinity_func(potential): 
 
-        
     integral_ginfty = integrate.quad(integrand, 0, length_channel, args=(potential,), points=length_channel/dx)[0]/length_channel
-    
-    # print(length_channel, integral_ginfty)
 
     g_infty = 1 + delta_g*integral_ginfty
 
@@ -59,9 +40,7 @@ def g_infinity_func(potential):
 
 def model(g, t, potential_shape):
 
-    if potential_shape == 'triangular':
-
-        potential = triangular_potential(t)
+    potential = potential_shapes.potential(t, shape=f'{potential_shape}')
 
     g_infinity = g_infinity_func(potential)
 
@@ -72,7 +51,7 @@ def model(g, t, potential_shape):
 # Copute the steady solution: perform integral in equation (5) 
 # for a specific potential V(t)
 
-def steady_solution():
+def steady_solution(potential_shape):
 
     time_interval = np.linspace(initial_time,final_time,time_steps)
     steady_sol_vec = np.zeros((time_steps))
@@ -82,7 +61,7 @@ def steady_solution():
     for time in range(time_steps):
 
         steady_sol_vec[time] = g_infinity_func(
-            triangular_potential(time_interval[time]))
+            potential_shapes.potential(time_interval[time]), shape=f'{potential_shape}')
         
         steady_sol_file.write(f'{time_interval[time]} \t {steady_sol_vec[time]} \n')
 
@@ -93,8 +72,6 @@ def odeint_solver_function(potential_shape):
     time_interval = np.linspace(initial_time,final_time,time_steps)
     g=0
     g = odeint(model, inital_condition, time_interval, args=(potential_shape, ))
-    # print(g)
-    # g = odeint(trial_model, inital_condition, time_interval)
 
     solution_odeint = open(f"{DATA_PATH}solution_odeint.txt", "w")
 
@@ -113,11 +90,7 @@ def euler_forward_solver(potential_shape):
     
     for time in time_interval:
         
-        if potential_shape == 'triangular':
-        
-            potential = triangular_potential(time)
-        
-        # g += timestep_size*model(g, time, potential_shape)
+        potential = potential_shapes.potential(time, shape=f'{potential_shape}')
 
         g += (g_infinity_func(potential) - g)/(tau)*timestep_size
 
