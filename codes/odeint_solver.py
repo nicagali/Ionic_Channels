@@ -40,14 +40,6 @@ def integrand(x, potential):
 
         integrand = integrand1 - integrand2num/integrand2den
 
-    # print(x, radius_tip, radius_x, length_channel, radius_base)
-
-    # print(x, potential)
-
-    # print(x, integrand1, integrand2num, integrand2den, integrand2num/integrand2den, integrand1 - integrand2num/integrand2den)
-
-    # print(x, integrand2den, peclet_number, potential, radius_tip, radius_base)
-
     return integrand
 
 # Compute integral and give the value of g/g_0 = \rho_s (=average concentration)
@@ -77,22 +69,22 @@ def model(g, t, potential_shape):
 
     return dgdt
 
-# Copute the average salt concentration: perform integral in equation (5) 
+# Copute the steady solution: perform integral in equation (5) 
 # for a specific potential V(t)
 
-def average_density_steady():
+def steady_solution():
 
     time_interval = np.linspace(initial_time,final_time,time_steps)
-    average_density = np.zeros((time_steps))
+    steady_sol_vec = np.zeros((time_steps))
 
-    avdensity_file = open(f"{DATA_PATH}average_density_steady.txt", "w")
+    steady_sol_file = open(f"{DATA_PATH}steady_solution.txt", "w")
 
     for time in range(time_steps):
 
-        average_density[time] = g_infinity_func(
+        steady_sol_vec[time] = g_infinity_func(
             triangular_potential(time_interval[time]))
         
-        avdensity_file.write(f'{time_interval[time]} \t {average_density[time]} \n')
+        steady_sol_file.write(f'{time_interval[time]} \t {steady_sol_vec[time]} \n')
 
 # Solve differential equation in (7) for a specific potential shape V(t)
 

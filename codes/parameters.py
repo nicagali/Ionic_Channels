@@ -54,8 +54,5 @@ size_ticks = 13
 # dictionaries
 
 gsolution_style = dict(c = 'navy', lw=2)
-gsolution_style_tim = dict(c = 'rebeccapurple', lw=2)
-voltage_triangle_style = dict(c='limegreen', lw=2)
-voltage_triangle_style_tim = dict(c='darkgreen', lw=2)
-averagedensity_style = dict(c='firebrick', lw=2)
-averagedensity_style_tim = dict(c='orangered', lw=2)
+voltage_triangle_style = dict(c='limegreen', lw=2, label=r'$V(t)$')
+steady_solution_style = dict(c='firebrick', lw=2, label=r'$g_{\infty}/g_0(t)$')
