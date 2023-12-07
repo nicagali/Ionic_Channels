@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
 from scipy import signal
+from parameters import *
 
 # Physical parameters
 
@@ -21,15 +22,12 @@ sigma = -0.0015*1e18  # [1 / m^2]
 rho_b = 0.1*N_A  # [1 / m^3]
 w = -9.5
 
-
 # Simulation parameters
 
-frequency = 80
-dt = 1e-5  # time integration step [s]
+frequency = 40
+dt = 7e-5  # time integration step [s]
 dx = 1e-7  # spatial integration step [m]
-Nsteps = 20000
-
-
+Nsteps = 1000
 
 # Initial configuration
 t = 0
@@ -38,7 +36,7 @@ def wave_potential(t):
     return np.cos(2 * np.pi*t*frequency) 
 
 def sawtooth_potential(t):
-    return signal.sawtooth(2*np.pi*frequency*t, width=0.5)
+    return signal.sawtooth(2*np.pi*frequency*t-np.pi/2, width=0.5)
 
 def square_potential(t):
     return signal.square(2*np.pi*t*frequency, duty=0.1)
@@ -50,12 +48,14 @@ class Memristor:
         self.L = L  # length
         self.tau = L**2/(12*D)
 
+        self.old_conductivity = 0
+
         self.Rb = Rb  # base radius of cone
         self.dR = dR  # difference in radius between base and tip
         self.Rt = Rb- dR  # tip radius
         self.Du = sigma/(2*rho_b*self.Rt)  # Duhkin number
         self.dg = -2 * w * dR/Rb * self.Du
-        print(self.dg)
+        # print(self.dg)
         self.g0 = np.pi * self.Rt*Rb/L * 2*rho_b*e**2*D / kT
 
     def radius(self, x):
@@ -75,58 +75,54 @@ class Memristor:
         integral = 0
         if np.abs(Pe) > 0.1:
             integral = quad(self.conductivity_function, 0, self.L,args=(Pe,), points=int(self.L/dx))[0]/self.L
-            print(integral)
+            # print(integral)
         return (1 + self.dg * integral)
 
     def update_conductivity(self, voltage_t):
         # Simple forward Euler scheme 
         ginf = self.conductivity_limit(voltage_t)
+        self.old_conductivity = self.conductivity
         self.conductivity += ((self.conductivity_limit(voltage_t)
                               - self.conductivity)/self.tau*dt)
 
-fig, (ax1, ax2) = plt.subplots(2, sharex=True)
 
-chonk = Memristor(1, 10e-6, 200e-9, 150e-9)
+def tim_solver():
 
-t_list = np.arange(0,Nsteps)*dt
-V_list = np.array([])
-g_list = np.array([])
+    chonk = Memristor(1.4, 10e-6, 200e-9, 150e-9)
 
-output = -1
+    t_list = np.arange(0,Nsteps)*dt
+    V_list = np.array([])
+    g_list = np.array([])
+    ginfinity_list = np.array([])
 
-for t in t_list:
-    V = sawtooth_potential(t)
-    #V = wave_potential(t)
-    #V = square_potential(t)
+    voltage_file = open(f"{DATA_PATH}voltage_file_tim.txt", "w")
+    gininfinity_file = open(f"{DATA_PATH}average_density_tim.txt", "w")
+    g_file = open(f"{DATA_PATH}solution_tim.txt", "w")
+    file = open(f"{DATA_PATH}checking_file_tim.txt", "w")
     
-    #V = pulses(t, 0, 1, [0, 0.1, 0.1])
-    
-    V_list = np.append(V_list, V)
-    g_list = np.append(g_list, chonk.conductivity)
-    
-    chonk.update_conductivity(V)
-    if t>0.75/frequency and output<0:
-        output = 1 if chonk.conductivity > 1 else 0
+    output = -1
+
+    for t in t_list:
+        V = sawtooth_potential(t)
         
+        V_list = np.append(V_list, V)
+        g_list = np.append(g_list, chonk.conductivity)
+        # ginfinity_list = np.append(ginfinity_list, chonk.conductivity_limit)
+
+        
+        chonk.update_conductivity(V)
+        if t>0.75/frequency and output<0:
+            output = 1 if chonk.conductivity > 1 else 0
+
+        voltage_file.write(f'{t} \t {V} \n')
+        gininfinity_file.write(f'{t} \t {chonk.conductivity_limit(V)} \n')
+        g_file.write(f'{t} \t {chonk.conductivity} \n')
+
+        file.write(f'{t} \t {V} \t {chonk.conductivity_limit(V)} \t {chonk.old_conductivity} \t {chonk.tau} \t {dt} \n')
+
+
     
+        
 
-ax1.scatter(t_list, g_list, c=[t_list,], vmin=0, vmax=Nsteps*dt)
-ax2.scatter(t_list, V_list, color='maroon')
 
-#ax2.plot([0.3/frequency, 0.3/frequency],[-1, 0.5], ':', color="#444444")
-#ax2.plot([0.35/frequency, 0.35/frequency],[-1, 0.5], ':', color="#444444")
-#ax2.plot([0.4/frequency, 0.4/frequency],[-1, 0.5], ':', color="#444444")
-fig.set_figheight(3)
-ax2.set_xlabel('t(s)')
-ax2.set_ylabel(r'$V_{ext}$ (V)')
-ax1.set_ylabel(r'$g/g_0$')
-plt.tight_layout()
-plt.savefig('fig1.pdf')
-plt.figure()
-# plt.scatter(V_list, g_list, c=[t_list,], vmin=0, vmax=Nsteps*dt, alpha=0.9)
-plt.plot(V_list, g_list)
-plt.xlabel('V(V)')
-plt.ylabel('$g/g_0$')
-plt.savefig('fig2.pdf')
-# print(output)
 

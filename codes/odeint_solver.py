@@ -11,7 +11,6 @@ def triangular_potential(time, write=False):
 
     if write:
 
-
         t = np.linspace(initial_time,final_time,time_steps)
         
         triangle_waveform = signal.sawtooth(2*np.pi*frequency*t-np.pi/2, 0.5)
@@ -27,13 +26,19 @@ def triangular_potential(time, write=False):
 
 def integrand(x, potential):
 
-    radius_x = radius_base - (x*delta_radius)/length_channel
+    integrand=0
 
-    integrand1 = (x*radius_tip)/(radius_x*(length_channel))
+    if np.abs(peclet_number*potential)>=0.1:
 
-    integrand2num = np.exp(peclet_number*potential*(x/length_channel)*((radius_tip)**2/(radius_base*radius_x))) - 1
-    
-    integrand2den = (np.exp(peclet_number*potential*radius_tip/radius_base) - 1)
+        radius_x = radius_base - (x*delta_radius)/length_channel
+
+        integrand1 = (x*radius_tip)/(radius_x*(length_channel))
+
+        integrand2num = np.exp(peclet_number*potential*(x/length_channel)*((radius_tip)**2/(radius_base*radius_x))) - 1
+        
+        integrand2den = (np.exp(peclet_number*potential*radius_tip/radius_base) - 1)
+
+        integrand = integrand1 - integrand2num/integrand2den
 
     # print(x, radius_tip, radius_x, length_channel, radius_base)
 
@@ -43,21 +48,18 @@ def integrand(x, potential):
 
     # print(x, integrand2den, peclet_number, potential, radius_tip, radius_base)
 
-    return integrand1 - integrand2num/integrand2den
+    return integrand
 
 # Compute integral and give the value of g/g_0 = \rho_s (=average concentration)
 
 def g_infinity_func(potential): 
 
-    if potential==0:
-        g_infty=0
-    else:
         
-        integral_ginfty = integrate.quad(integrand, 0, length_channel, args=(potential,), points=length_channel/dx)[0]/length_channel
-        
-        print(length_channel, integral_ginfty)
+    integral_ginfty = integrate.quad(integrand, 0, length_channel, args=(potential,), points=length_channel/dx)[0]/length_channel
+    
+    # print(length_channel, integral_ginfty)
 
-        g_infty = 1 + delta_g*integral_ginfty
+    g_infty = 1 + delta_g*integral_ginfty
 
     return g_infty
 
@@ -90,7 +92,7 @@ def average_density_steady():
         average_density[time] = g_infinity_func(
             triangular_potential(time_interval[time]))
         
-        avdensity_file.write(f'{time_interval[time]} \t {average_density[time]} \t {triangular_potential(time_interval[time])} \n')
+        avdensity_file.write(f'{time_interval[time]} \t {average_density[time]} \n')
 
 # Solve differential equation in (7) for a specific potential shape V(t)
 
@@ -109,7 +111,7 @@ def odeint_solver_function(potential_shape):
 
 def euler_forward_solver(potential_shape):
     
-    
+    file = open(f"{DATA_PATH}checking_file.txt", "w")
     
     time_interval = np.linspace(initial_time,final_time,time_steps)
 
@@ -123,7 +125,11 @@ def euler_forward_solver(potential_shape):
         
             potential = triangular_potential(time)
         
-        g += timestep_size*model(g, time, potential_shape)
+        # g += timestep_size*model(g, time, potential_shape)
+
+        g += (g_infinity_func(potential) - g)/(tau)*timestep_size
+
+        file.write(f'{time} \t {potential} \t {g_infinity_func(potential)} \t {g} \t {tau} \t {timestep_size} \n')
         
         solution_euler.write(f'{time} \t {g} \n')
         

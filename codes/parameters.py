@@ -8,17 +8,18 @@ PLOT_PATH = '../plots/'
 # PARAMETERS ODE
 
 inital_condition = 1.4
-tau = 4.8
-final_time = 0.2
+tau = 4.8e-3
+initial_time = 0
+final_time = 0.07
 time_steps = 1000
 timestep_size = final_time/1000
-initial_time = timestep_size
-final_time+=timestep_size
+# initial_time = timestep_size
+# final_time+=timestep_size
 dx = 1e-7
 
-stepsize = final_time/time_steps
-initial_time = stepsize
-final_time = final_time + stepsize
+# stepsize = final_time/time_steps
+# initial_time = stepsize
+# final_time = final_time + stepsize
 
 # PARAMETERS G INFINITY
 
@@ -53,5 +54,8 @@ size_ticks = 13
 # dictionaries
 
 gsolution_style = dict(c = 'navy', lw=2)
+gsolution_style_tim = dict(c = 'rebeccapurple', lw=2)
 voltage_triangle_style = dict(c='limegreen', lw=2)
+voltage_triangle_style_tim = dict(c='darkgreen', lw=2)
 averagedensity_style = dict(c='firebrick', lw=2)
+averagedensity_style_tim = dict(c='orangered', lw=2)
