@@ -61,7 +61,8 @@ def steady_solution(potential_shape):
     for time in range(time_steps):
 
         steady_sol_vec[time] = g_infinity_func(
-            potential_shapes.potential(time_interval[time]), shape=f'{potential_shape}')
+            potential_shapes.potential(time_interval[time], shape=f'{potential_shape}'))
+        
         
         steady_sol_file.write(f'{time_interval[time]} \t {steady_sol_vec[time]} \n')
 

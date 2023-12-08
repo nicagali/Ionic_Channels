@@ -7,7 +7,7 @@ PLOT_PATH = '../plots/'
 
 # PARAMETERS ODE
 
-inital_condition = 1.4
+inital_condition = 1
 tau = 4.8e-3
 initial_time = 0
 final_time = 0.07
@@ -43,6 +43,8 @@ g_0 = g_1*g_2
 # PARAMETERS SAWTOOTH POTENTIAL
 
 frequency = 40
+# period = 0.004
+# frequency = 1/period
 
 # PLOT PREFERENCES
 
