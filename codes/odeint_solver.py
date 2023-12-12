@@ -63,7 +63,6 @@ def steady_solution(potential_shape):
         steady_sol_vec[time] = g_infinity_func(
             potential_shapes.potential(time_interval[time], shape=f'{potential_shape}'))
         
-        
         steady_sol_file.write(f'{time_interval[time]} \t {steady_sol_vec[time]} \n')
 
 # Solve differential equation in (7) for a specific potential shape V(t)
@@ -74,14 +73,14 @@ def odeint_solver_function(potential_shape):
     g=0
     g = odeint(model, inital_condition, time_interval, args=(potential_shape, ))
 
+    print(inital_condition)
+
     solution_odeint = open(f"{DATA_PATH}solution_odeint.txt", "w")
 
     for time in range(len(time_interval)):
         solution_odeint.write(f'{time_interval[time]} \t {g[time][0]} \n')
 
 def euler_forward_solver(potential_shape):
-    
-    file = open(f"{DATA_PATH}checking_file.txt", "w")
     
     time_interval = np.linspace(initial_time,final_time,time_steps)
 
@@ -94,8 +93,6 @@ def euler_forward_solver(potential_shape):
         potential = potential_shapes.potential(time, shape=f'{potential_shape}')
 
         g += (g_infinity_func(potential) - g)/(tau)*timestep_size
-
-        file.write(f'{time} \t {potential} \t {g_infinity_func(potential)} \t {g} \t {tau} \t {timestep_size} \n')
         
         solution_euler.write(f'{time} \t {g} \n')
         

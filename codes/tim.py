@@ -57,6 +57,7 @@ class Memristor:
         self.dg = -2 * w * dR/Rb * self.Du
         # print(self.dg)
         self.g0 = np.pi * self.Rt*Rb/L * 2*rho_b*e**2*D / kT
+        
 
     def radius(self, x):
         # radius of the cone at x
@@ -122,7 +123,8 @@ def tim_solver():
 
 
     
-        
+chonk = Memristor(1.4, 10e-6, 200e-9, 150e-9)  
+print(chonk.g0)  
 
 
 

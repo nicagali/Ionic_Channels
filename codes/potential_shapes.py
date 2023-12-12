@@ -6,7 +6,7 @@ def triangular_potential(time):
     return signal.sawtooth(2*np.pi*frequency*time-np.pi/2, 0.5)
 
 def square_potential(time):
-    return (-1)*(signal.square(2*np.pi*frequency*time, 0.2) + 1)*5/2
+    return (-1)*(signal.square(2*np.pi*frequency*time, 0.2) +9)/2
 
 def potential(time, shape, write=False):
 

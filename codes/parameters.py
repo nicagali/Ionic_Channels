@@ -17,9 +17,7 @@ timestep_size = final_time/1000
 # final_time+=timestep_size
 dx = 1e-7
 
-# stepsize = final_time/time_steps
-# initial_time = stepsize
-# final_time = final_time + stepsize
+time_interval = np.linspace(initial_time,final_time,time_steps)
 
 # PARAMETERS G INFINITY
 
@@ -28,7 +26,7 @@ length_channel = 10e-6
 radius_base = 200e-9
 radius_tip = 50e-9
 peclet_number = 16.5
-rho_b = 0.1e-3
+rho_b = 0.1
 electron_charge = 1.60217663e-19
 Dvalue = 1.75e-9
 boltzman_const = 1.38e-23
@@ -40,11 +38,18 @@ g_1 = np.pi*radius_tip*radius_base/length_channel
 g_2 = 2*rho_b*(electron_charge**2)*Dvalue/(boltzman_const*temperature)
 g_0 = g_1*g_2
 
+avogadro_number = 6.022e23
+
+g_0 *= avogadro_number
+
+inital_condition = (1e-12/g_0)*0.1
+
+
 # PARAMETERS SAWTOOTH POTENTIAL
 
-frequency = 40
-# period = 0.004
-# frequency = 1/period
+# frequency = 40
+period = 0.01
+frequency = 1/period
 
 # PLOT PREFERENCES
 

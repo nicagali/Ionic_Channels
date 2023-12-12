@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from parameters import *
 
-def plot_gsolution(ax, solver):
+def plot_gsolution(ax, solver, time_in_steps=False, g0_ratio=True):
     
     data = 0
 
@@ -17,10 +17,22 @@ def plot_gsolution(ax, solver):
     time_interval = data[0]
     solution = data[1]
 
+    if time_in_steps:
+
+        time_interval = list(range(0,len(time_interval)))
+
+    if g0_ratio == False:
+
+        solution *= g_0
+        ax.set_ylabel(r'$g(t)$', fontsize = axis_fontsize)
+        
+    else:
+
+        ax.set_ylabel(r'$g(t)/g_0$', fontsize = axis_fontsize)
+
     ax.plot(time_interval, solution, **gsolution_style)
  
     ax.grid(ls=':')
-    ax.set_ylabel(r'$g(t)/g_0$', fontsize = axis_fontsize)
     ax.set_xlabel(r't', fontsize = axis_fontsize)
 
     ax.tick_params('y', labelsize=size_ticks)
@@ -34,14 +46,13 @@ def plot_voltage(ax, yaxis_label=False):
     time_interval = data[0]
     solution = data[1]
 
-    ax.plot(time_interval, solution, **voltage_triangle_style)
+    ax.plot(list(range(0,len(time_interval))), solution, **voltage_triangle_style)
 
     ax.grid(ls=':')
     ax.set_xlabel(r't', fontsize = axis_fontsize)
 
     ax.tick_params('y', labelsize=size_ticks)
     ax.tick_params('x', labelsize=size_ticks)
-    ax.set_xlim(np.min(time_interval), np.max(time_interval))
 
     if yaxis_label:
         ax.set_ylabel(r'$V(t)$', fontsize = axis_fontsize)
