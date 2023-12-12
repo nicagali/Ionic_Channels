@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from parameters import *
+from parameters_channels import *
 
 def plot_gsolution(ax, solver, time_in_steps=False, g0_ratio=True):
     

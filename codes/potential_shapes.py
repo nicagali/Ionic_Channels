@@ -1,6 +1,6 @@
 from scipy import signal
 import numpy as np
-from parameters import *
+from parameters_channels import *
 
 def triangular_potential(time):
     return signal.sawtooth(2*np.pi*frequency*time-np.pi/2, 0.5)

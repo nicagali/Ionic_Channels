@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
 from scipy import signal
-from parameters import *
+from parameters_channels import *
 
 # Physical parameters
 

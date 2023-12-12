@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
-from parameters import *
+from parameters_channels import *
 from scipy import signal
 import scipy.integrate as integrate
 import potential_shapes
@@ -81,7 +81,7 @@ def odeint_solver_function(potential_shape):
         solution_odeint.write(f'{time_interval[time]} \t {g[time][0]} \n')
 
 def euler_forward_solver(potential_shape):
-    
+
     time_interval = np.linspace(initial_time,final_time,time_steps)
 
     solution_euler = open(f"{DATA_PATH}solution_euler.txt", "w")
