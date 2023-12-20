@@ -23,7 +23,7 @@ def plot_gsolution(ax, solver, time_in_steps=False, g0_ratio=True):
 
     if g0_ratio == False:
 
-        solution *= g_0
+        # solution *= g_0
         ax.set_ylabel(r'$g(t)$', fontsize = axis_fontsize)
         
     else:

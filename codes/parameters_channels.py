@@ -42,13 +42,13 @@ avogadro_number = 6.022e23
 
 g_0 *= avogadro_number
 
-inital_condition = (1e-12/g_0)*0.1
+inital_condition = (4e-12)/g_0
 
 
 # PARAMETERS SAWTOOTH POTENTIAL
 
 # frequency = 40
-period = 0.01
+period = 0.03
 frequency = 1/period
 
 # PLOT PREFERENCES

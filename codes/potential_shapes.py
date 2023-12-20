@@ -5,12 +5,23 @@ from parameters_channels import *
 def triangular_potential(time):
     return signal.sawtooth(2*np.pi*frequency*time-np.pi/2, 0.5)
 
-def square_potential(time):
-    return (-1)*(signal.square(2*np.pi*frequency*time, 0.2) +9)/2
+def square_potential(time, parameters):
+    return 4*((parameters[0])*(signal.square(2*np.pi*frequency*time, 0.1) +parameters[1])/parameters[2] +5)
 
-def potential(time, shape, write=False):
+def potential(time, shape, which_conductance, write=False):
 
     signal_returned = 0
+
+    parameters = [0,0,0]
+
+    if which_conductance=="g1":
+
+        parameters = [-1, 9, 2]
+
+    
+    if which_conductance=="g2":
+
+        parameters = [-1, 9, 2]
 
     if write:
 
@@ -22,7 +33,7 @@ def potential(time, shape, write=False):
 
         if shape=='square':
 
-            waveform = square_potential(t)
+            waveform = square_potential(t, parameters)
 
         voltage_file = open(f"{DATA_PATH}voltage_file.txt", "w")
         for time_index in range(len(t)):
@@ -34,7 +45,7 @@ def potential(time, shape, write=False):
 
     if shape=='square':
 
-        signal_returned = square_potential(time)
+        signal_returned = square_potential(time, parameters)
 
     return signal_returned
 
