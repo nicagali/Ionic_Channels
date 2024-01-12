@@ -3,25 +3,35 @@ import numpy as np
 from parameters_channels import *
 
 def triangular_potential(time):
-    return signal.sawtooth(2*np.pi*frequency*time-np.pi/2, 0.5)
+    return signal.sawtooth(2*np.pi*frequency_tr*time-np.pi/2, 0.5)
 
-def square_potential(time, parameters):
-    return 4*((parameters[0])*(signal.square(2*np.pi*frequency*time, 0.1) +parameters[1])/parameters[2] +5)
+def square_potential(time, duty_sq, amplitude_sq, phase_sq, shift_sq):
+    return amplitude_sq*signal.square(2*np.pi*frequency_sq*time + phase_sq, duty_sq) + shift_sq
 
-def potential(time, shape, which_conductance, write=False):
+def potential(time, shape, which_conductance=0, write=False):
 
     signal_returned = 0
 
-    parameters = [0,0,0]
+    parameters = [0,0,0,0]
 
     if which_conductance=="g1":
 
-        parameters = [-1, 9, 2]
-
+        duty_sq = 0.2
+        frequency_sq = 0.1
+        period_sq=1/frequency_sq
+        amplitude_sq = -1/2
+        phase_sq = 0
+        shift_sq = -4.5
     
     if which_conductance=="g2":
 
-        parameters = [-1, 9, 2]
+        duty_sq = 0.1
+        frequency_sq = 0.1
+        period_sq=1/frequency_sq
+        amplitude_sq = -2
+        # phase_sq = np.pi*frequency_sq
+        phase_sq = 0
+        shift_sq = 2
 
     if write:
 
@@ -45,7 +55,7 @@ def potential(time, shape, which_conductance, write=False):
 
     if shape=='square':
 
-        signal_returned = square_potential(time, parameters)
+        signal_returned = square_potential(time, duty_sq, amplitude_sq, phase_sq, shift_sq)
 
     return signal_returned
 

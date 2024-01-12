@@ -71,22 +71,25 @@ def odeint_solver_function(potential_shape):
 
     time_interval = np.linspace(initial_time,final_time,time_steps)
     g=0
-    g = odeint(model, inital_condition, time_interval, args=(potential_shape, ))
-
-    print(inital_condition)
+    inital_cond = (inital_condition*10**(-12))/g_0
+    g = odeint(model, inital_cond, time_interval, args=(potential_shape, ))
 
     solution_odeint = open(f"{DATA_PATH}solution_odeint.txt", "w")
 
     for time in range(len(time_interval)):
+        
+        print(g[time][0]*g_0)
         solution_odeint.write(f'{time_interval[time]} \t {g[time][0]} \n')
 
-def euler_forward_solver(potential_shape, conductance_numb='g1'):
+def euler_forward_solver(potential_shape, conductance_numb):
 
-    solution_euler = open("/home/monicaconte/nica/phd/Projects/Ionic_Channels/data/solution_euler.txt", "w")
+    # print(inital_condition)
 
-    g=inital_condition
+    solution_euler = open(f"{PATH_TO_DIR_ION}data/solution_euler.txt", "w")
+
+    g=(inital_condition*10**(-12))/g_0
     
-    solution_euler.write(f'{initial_time} \t {inital_condition*g_0} \n')
+    solution_euler.write(f'{initial_time} \t {(inital_condition*10**(-12)/g_0)} \n')
 
     time_interval = np.linspace(initial_time + (final_time-initial_time)/time_steps,final_time,time_steps)
 
@@ -96,5 +99,6 @@ def euler_forward_solver(potential_shape, conductance_numb='g1'):
 
         g += (g_infinity_func(potential) - g)/(tau)*timestep_size
         
-        solution_euler.write(f'{time} \t {g*g_0} \n')
+        
+        solution_euler.write(f'{time} \t {g} \n')
         

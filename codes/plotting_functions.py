@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from parameters_channels import *
 
-def plot_gsolution(ax, solver, time_in_steps=False, g0_ratio=True):
+def plot_gsolution(ax, solver, label="", time_in_steps=False, g0_ratio=True):
     
     data = 0
 
@@ -23,8 +23,8 @@ def plot_gsolution(ax, solver, time_in_steps=False, g0_ratio=True):
 
     if g0_ratio == False:
 
-        # solution *= g_0
-        ax.set_ylabel(r'$g(t)$', fontsize = axis_fontsize)
+        solution *= g_0*10**(12)
+        ax.set_ylabel(r'$g(t)[pS]$', fontsize = axis_fontsize)
         
     else:
 
@@ -33,29 +33,40 @@ def plot_gsolution(ax, solver, time_in_steps=False, g0_ratio=True):
     ax.plot(time_interval, solution, **gsolution_style)
  
     ax.grid(ls=':')
-    ax.set_xlabel(r't', fontsize = axis_fontsize)
+    ax.set_xlabel(r't[ms]', fontsize = axis_fontsize)
 
     ax.tick_params('y', labelsize=size_ticks)
     ax.tick_params('x', labelsize=size_ticks)
     ax.set_xlim(np.min(time_interval), np.max(time_interval))
+    
+    # label
+    ax.text(-0.1, 1, label, transform=ax.transAxes, fontsize=size_labels, va='top', ha='right')
 
-def plot_voltage(ax, yaxis_label=False):
+def plot_voltage(ax, label="", yaxis_label=False):
 
     data = np.loadtxt(f"{DATA_PATH}voltage_file.txt", unpack=True)
    
     time_interval = data[0]
     solution = data[1]
 
-    ax.plot(list(range(0,len(time_interval))), solution, **voltage_triangle_style)
+    ax.plot(time_interval, solution, **voltage_triangle_style)
+    # ax.plot(list(range(0,len(time_interval))), solution, **voltage_triangle_style)
 
     ax.grid(ls=':')
-    ax.set_xlabel(r't', fontsize = axis_fontsize)
+    ax.set_xlabel(r't[ms]', fontsize = axis_fontsize)
 
     ax.tick_params('y', labelsize=size_ticks)
     ax.tick_params('x', labelsize=size_ticks)
+    
+    ax.set_xlim(np.min(time_interval), np.max(time_interval))
 
     if yaxis_label:
-        ax.set_ylabel(r'$V(t)$', fontsize = axis_fontsize)
+        ax.set_ylabel(r'$V(t)[V]$', fontsize = axis_fontsize)
+        
+    # label
+    ax.text(-0.15, 1, label, transform=ax.transAxes, fontsize=size_labels, va='top', ha='right')
+    
+    print("time at + ", delta_t_sq, ", time at -", period_sq-delta_t_sq)
 
 def plot_steady_solution(ax, yaxis_label=False):
 
@@ -67,7 +78,7 @@ def plot_steady_solution(ax, yaxis_label=False):
     ax.plot(time_interval, solution, **steady_solution_style)
 
     ax.grid(ls=':')
-    ax.set_xlabel(r't', fontsize = axis_fontsize)
+    ax.set_xlabel(r't[ms]', fontsize = axis_fontsize)
 
     ax.tick_params('y', labelsize=size_ticks)
     ax.tick_params('x', labelsize=size_ticks)
@@ -101,7 +112,7 @@ def plot_voltage_density_steady(ax):
 
     ax2.set_ylabel(r'$\langle \rho_s \rangle / \left( 2\rho_b \right)$', fontsize = axis_fontsize)
 
-def plot_conductance_voltage(ax):
+def plot_conductance_voltage(ax, label=""):
 
     data_conductance = np.loadtxt(f"{DATA_PATH}solution_odeint.txt", unpack=True)
     data_voltage = np.loadtxt(f"{DATA_PATH}voltage_file.txt", unpack=True)
@@ -112,10 +123,87 @@ def plot_conductance_voltage(ax):
     ax.plot(voltage, conductance, **gsolution_style)
 
     ax.grid(ls=':')
-    ax.set_ylabel(r'$g(t)/g_0$', fontsize = axis_fontsize)
-    ax.set_xlabel(r'V(t)', fontsize = axis_fontsize)
+    ax.set_ylabel(r'$g(V)/g_0$', fontsize = axis_fontsize)
+    ax.set_xlabel(r'V[V]', fontsize = axis_fontsize)
 
     ax.tick_params('y', labelsize=size_ticks)
     ax.tick_params('x', labelsize=size_ticks)
+    
+    ax.text(-0.2, 1, label, transform=ax.transAxes, fontsize=size_labels, va='top', ha='right')
 
+def plot_current_voltage(ax, solution_type, label=""):
+    
+    data = np.loadtxt(f"{DATA_PATH}voltage_file.txt", unpack=True)
+    voltage = np.array(data[1])
+    
+    if solution_type=='static':
+        data = np.loadtxt(f"{DATA_PATH}steady_solution.txt", unpack=True)
+    if solution_type=='dynamic':
+        data = np.loadtxt(f"{DATA_PATH}solution_odeint.txt", unpack=True)
+    conductance = np.array(data[1])
+    
+    current = voltage*conductance*(g_0*10**(12))
+    
+    ax.plot(voltage, current, **current_style)
+    
+    ax.axhline(0, color='dimgray', lw=1)
+    ax.axvline(0, color='dimgray', lw=1)
+    
+    ax.grid(ls=':')
+    ax.set_ylabel(r'I$[pA]$', fontsize = axis_fontsize)
+    ax.set_xlabel(r'V[V]', fontsize = axis_fontsize)
 
+    ax.tick_params('y', labelsize=size_ticks)
+    ax.tick_params('x', labelsize=size_ticks)
+    
+    # label
+    ax.text(-0.1, 1, label, transform=ax.transAxes, fontsize=size_labels, va='top', ha='right')
+    
+def plot_voltage_gsolution(ax, solution_type, label=""):
+    
+    data = np.loadtxt(f"{DATA_PATH}voltage_file.txt", unpack=True)
+   
+    time_interval = data[0]
+    solution = data[1]
+
+    ax.plot(time_interval, solution, **voltage_triangle_style)
+
+    ax.grid(ls=':')
+    ax.set_xlabel(r't[ms]', fontsize = axis_fontsize)
+
+    ax.tick_params('y', labelsize=size_ticks)
+    ax.tick_params('x', labelsize=size_ticks)
+    
+    ax.set_xlim(np.min(time_interval), np.max(time_interval))
+
+    ax.set_ylabel(r'$V[V]$', fontsize = axis_fontsize)
+        
+    # label
+    ax.text(-0.2, 1, label, transform=ax.transAxes, fontsize=size_labels, va='top', ha='right')
+        
+    ax2 = ax.twinx()
+    
+    if solution_type=='dynamic':
+        
+        data = np.loadtxt(f"{DATA_PATH}solution_odeint.txt", unpack=True)
+        solution = data[1]
+        ax2.plot(time_interval, solution, **gsolution_style)
+        
+        ax2.set_ylabel(r'$g(t)/g_0$', fontsize = axis_fontsize)
+        ax2.spines['right'].set_color('navy')
+        ax2.tick_params(axis='y', colors='navy', labelsize=size_ticks)
+        
+    if solution_type=='static':
+        
+        data = np.loadtxt(f"{DATA_PATH}steady_solution.txt", unpack=True)
+        solution = data[1]
+        ax2.plot(time_interval, solution, **steady_solution_style)
+        
+        ax2.set_ylabel(r'$g_{\infty}/g_0$', fontsize = axis_fontsize)
+        ax2.spines['right'].set_color('firebrick')
+        ax2.tick_params(axis='y', colors='firebrick', labelsize=size_ticks)
+    
+    
+    
+
+    
