@@ -45,6 +45,7 @@ g_0 *= avogadro_number
 
 inital_condition = 4
 
+capacitance = 1e-14
 
 # PARAMETERS SAWTOOTH POTENTIAL
 

@@ -52,7 +52,7 @@ def plot_voltage(ax, label="", yaxis_label=False):
     ax.plot(time_interval, solution, **voltage_triangle_style)
     # ax.plot(list(range(0,len(time_interval))), solution, **voltage_triangle_style)
 
-    ax.grid(ls=':')
+    # ax.grid(ls=':')
     ax.set_xlabel(r't[ms]', fontsize = axis_fontsize)
 
     ax.tick_params('y', labelsize=size_ticks)
@@ -61,7 +61,7 @@ def plot_voltage(ax, label="", yaxis_label=False):
     ax.set_xlim(np.min(time_interval), np.max(time_interval))
 
     if yaxis_label:
-        ax.set_ylabel(r'$V(t)[V]$', fontsize = axis_fontsize)
+        ax.set_ylabel(r'$V[V]$', fontsize = axis_fontsize)
         
     # label
     ax.text(-0.15, 1, label, transform=ax.transAxes, fontsize=size_labels, va='top', ha='right')
@@ -119,10 +119,15 @@ def plot_conductance_voltage(ax, label=""):
 
     conductance = data_conductance[1]
     voltage = data_voltage[1]
+    
+    conductance = conductance[400:]
+    voltage = voltage[400:]
+    
+    print(len(voltage))
 
     ax.plot(voltage, conductance, **gsolution_style)
 
-    ax.grid(ls=':')
+    # ax.grid(ls=':')
     ax.set_ylabel(r'$g(V)/g_0$', fontsize = axis_fontsize)
     ax.set_xlabel(r'V[V]', fontsize = axis_fontsize)
 
