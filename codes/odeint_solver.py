@@ -78,14 +78,13 @@ def odeint_solver_function(potential_shape):
 
     for time in range(len(time_interval)):
         
-        print(g[time][0]*g_0)
+        # print(g[time][0]*g_0)
         solution_odeint.write(f'{time_interval[time]} \t {g[time][0]} \n')
 
 def euler_forward_solver(potential_shape, conductance_numb):
 
     # print(inital_condition)
-
-    solution_euler = open(f"{PATH_TO_DIR_ION}data/solution_euler.txt", "w")
+    solution_euler = open(f"{DATA_PATH}solution_euler.txt", "w")
 
     g=(inital_condition*10**(-12))/g_0
     
@@ -102,3 +101,5 @@ def euler_forward_solver(potential_shape, conductance_numb):
         
         solution_euler.write(f'{time} \t {g} \n')
         
+
+    

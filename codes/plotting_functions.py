@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from parameters_channels import *
 
-def plot_gsolution(ax, solver, label="", time_in_steps=False, g0_ratio=True):
+def plot_gsolution(ax, solver, label="", time_in_steps=False, 
+                   g0_ratio=True, capacitance=False):
     
     data = 0
 
@@ -13,6 +14,15 @@ def plot_gsolution(ax, solver, label="", time_in_steps=False, g0_ratio=True):
     if solver=='euler':
         
         data = np.loadtxt(f"{DATA_PATH}solution_euler.txt", unpack=True)
+
+    if capacitance and solver=='odeint':
+
+        data = np.loadtxt(f"{DATA_PATH}solution_odeint_g.txt", unpack=True)
+
+    if capacitance and solver=='euler':
+
+        data = np.loadtxt(f"{DATA_PATH}solution_euler_g.txt", unpack=True)
+
 
     time_interval = data[0]
     solution = data[1]
@@ -42,17 +52,32 @@ def plot_gsolution(ax, solver, label="", time_in_steps=False, g0_ratio=True):
     # label
     ax.text(-0.1, 1, label, transform=ax.transAxes, fontsize=size_labels, va='top', ha='right')
 
-def plot_voltage(ax, label="", yaxis_label=False):
+def plot_voltage(ax, label="", yaxis_label=False, capacitor=False, odeint=False, euler=False):
 
     data = np.loadtxt(f"{DATA_PATH}voltage_file.txt", unpack=True)
    
+    if capacitor and odeint:
+
+        data = np.loadtxt(f"{DATA_PATH}solution_odeint_Vg.txt", unpack=True)
+
+    if capacitor and euler:
+
+        data = np.loadtxt(f"{DATA_PATH}solution_euler_Vg.txt", unpack=True)
+
+    if capacitor==False:
+
+        data = np.loadtxt(f"{DATA_PATH}voltage_file.txt", unpack=True)
+
     time_interval = data[0]
     solution = data[1]
 
-    ax.plot(time_interval, solution, **voltage_triangle_style)
+    if capacitor:
+        ax.plot(time_interval, solution, **voltage_capacitor_style)
+    else:
+        ax.plot(time_interval, solution, **voltage_triangle_style)
     # ax.plot(list(range(0,len(time_interval))), solution, **voltage_triangle_style)
 
-    # ax.grid(ls=':')
+    ax.grid(ls=':')
     ax.set_xlabel(r't[ms]', fontsize = axis_fontsize)
 
     ax.tick_params('y', labelsize=size_ticks)
@@ -136,7 +161,7 @@ def plot_conductance_voltage(ax, label=""):
     
     ax.text(-0.2, 1, label, transform=ax.transAxes, fontsize=size_labels, va='top', ha='right')
 
-def plot_current_voltage(ax, solution_type, label=""):
+def plot_current_voltage(ax, solution_type, label="", capacitance=False):
     
     data = np.loadtxt(f"{DATA_PATH}voltage_file.txt", unpack=True)
     voltage = np.array(data[1])
@@ -145,6 +170,9 @@ def plot_current_voltage(ax, solution_type, label=""):
         data = np.loadtxt(f"{DATA_PATH}steady_solution.txt", unpack=True)
     if solution_type=='dynamic':
         data = np.loadtxt(f"{DATA_PATH}solution_odeint.txt", unpack=True)
+    if capacitance and solution_type=='euler':
+        data = np.loadtxt(f"{DATA_PATH}solution_euler_g.txt", unpack=True)
+
     conductance = np.array(data[1])
     
     current = voltage*conductance*(g_0*10**(12))

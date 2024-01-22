@@ -8,6 +8,12 @@ def triangular_potential(time):
 def square_potential(time, duty_sq, amplitude_sq, phase_sq, shift_sq):
     return amplitude_sq*signal.square(2*np.pi*frequency_sq*time + phase_sq, duty_sq) + shift_sq
 
+def sine_potential(time, amplitude_sine, freq_sine):
+    return amplitude_sine*np.sin(2 * np.pi * freq_sine * time)
+
+def cosine_potential(time, amplitude_sine, freq_sine):
+    return amplitude_sine*np.cos(2 * np.pi * freq_sine * time)
+
 def potential(time, shape, which_conductance=0, write=False):
 
     signal_returned = 0
@@ -44,6 +50,10 @@ def potential(time, shape, which_conductance=0, write=False):
         if shape=='square':
 
             waveform = square_potential(t, parameters)
+
+        if shape=='sine':
+
+            waveform = sine_potential(t, amplitude_sine, freq_sine)
 
         voltage_file = open(f"{DATA_PATH}voltage_file.txt", "w")
         for time_index in range(len(t)):

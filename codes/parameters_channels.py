@@ -45,7 +45,7 @@ g_0 *= avogadro_number
 
 inital_condition = 4
 
-capacitance = 1e-14
+capacitance = 1e20
 
 # PARAMETERS SAWTOOTH POTENTIAL
 
@@ -78,6 +78,11 @@ shift_sq = 2
 
 delta_t_sq = period_sq*duty_sq
 
+# PARAMETERS SINE POTENTIAL
+
+amplitude_sine = 2
+freq_sine = 1/40
+
 # PLOT PREFERENCES
 
 # size
@@ -90,5 +95,6 @@ size_labels = 18
 
 gsolution_style = dict(c = 'navy', lw=2)
 voltage_triangle_style = dict(c='limegreen', lw=2, label=r'$V(t)$')
+voltage_capacitor_style = dict(c='darkolivegreen', lw=2, label=r'$V_g(t)$')
 steady_solution_style = dict(c='firebrick', lw=2, label=r'$g_{\infty}(V)/g_0$')
 current_style = dict(c='skyblue', lw=2)
