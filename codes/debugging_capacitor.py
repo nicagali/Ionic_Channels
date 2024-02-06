@@ -7,43 +7,28 @@ import scipy.integrate as integrate
 import potential_shapes
 import odeint_solver
 
-def model(variables, t):
-
-    g_V_t, V_g = variables
+def model(g, t):
 
     potential = potential_shapes.sine_potential(t, amplitude_sine, freq_sine)
 
-    potential_der = 2 * np.pi * freq_sine * potential_shapes.cosine_potential(t, amplitude_sine, freq_sine)
+    dgdt = (g_0*odeint_solver.g_infinity_func(potential) - g) / tau
 
-    # dgdt = (g_0*odeint_solver.g_infinity_func(V_g) - g_V_t) / tau
-
-    dgdt = (g_0*odeint_solver.g_infinity_func(potential) - g_V_t) / tau
-
-    dVgdt = -(1/capacitance) * g_V_t * V_g + potential_der
-
-    return [dgdt, dVgdt]
+    return dgdt
 
 def odeint_solver_function():
 
+    potential_shape = 'sine'
+
     time_interval = np.linspace(initial_time,final_time,time_steps)
-    Vg = 0
-    inital_cond = [0, inital_condition*10**(-12)]
+    g=0
+    inital_cond = inital_condition*10**(-12)
+    g = odeint(model, inital_cond, time_interval, args=(potential_shape, ))
 
-    print(inital_cond)
-
-    print(capacitance)
-
-    solution = odeint(model, inital_cond, time_interval)
-
-    Vg, g = solution.T
-
-    solution_odeint_Vg = open(f"{DATA_PATH}solution_odeint_Vg.txt", "w")
-    solution_odeint_g = open(f"{DATA_PATH}solution_odeint_g.txt", "w")
+    solution_odeint = open(f"{DATA_PATH}solution_odeint_g.txt", "w")
 
     for time in range(len(time_interval)):
-
-        solution_odeint_Vg.write(f'{time_interval[time]} \t {solution[time][0]} \n')
-        solution_odeint_g.write(f'{time_interval[time]} \t {g[time]} \n')
+        
+        solution_odeint.write(f'{time_interval[time]} \t {g[time][0]} \n')
 
 
 def euler_forward_solver():

@@ -44,7 +44,7 @@ def model(g, t, potential_shape):
 
     g_infinity = g_infinity_func(potential)
 
-    dgdt = (1/tau)*(g_infinity - g)
+    dgdt = (1/tau)*(g_0*g_infinity - g)
 
     return dgdt
 
@@ -72,6 +72,7 @@ def odeint_solver_function(potential_shape):
     time_interval = np.linspace(initial_time,final_time,time_steps)
     g=0
     inital_cond = (inital_condition*10**(-12))/g_0
+    inital_cond = inital_condition*10**(-12)
     g = odeint(model, inital_cond, time_interval, args=(potential_shape, ))
 
     solution_odeint = open(f"{DATA_PATH}solution_odeint.txt", "w")

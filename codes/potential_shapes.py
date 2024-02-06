@@ -12,7 +12,7 @@ def sine_potential(time, amplitude_sine, freq_sine):
     return amplitude_sine*np.sin(2 * np.pi * freq_sine * time)
 
 def cosine_potential(time, amplitude_sine, freq_sine):
-    return amplitude_sine*np.cos(2 * np.pi * freq_sine * time)
+    return 2 * np.pi * freq_sine * np.cos(2 * np.pi * freq_sine * time)
 
 def potential(time, shape, which_conductance=0, write=False):
 
@@ -54,6 +54,10 @@ def potential(time, shape, which_conductance=0, write=False):
         if shape=='sine':
 
             waveform = sine_potential(t, amplitude_sine, freq_sine)
+
+        if shape=='cosine':
+
+            waveform = cosine_potential(t, amplitude_sine, freq_sine)
 
         voltage_file = open(f"{DATA_PATH}voltage_file.txt", "w")
         for time_index in range(len(t)):
